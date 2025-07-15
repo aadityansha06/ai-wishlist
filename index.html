@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCraft-AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Purple-blue */
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); /* Pink-red */
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); /* Light blue-cyan */
+            --glass-bg: rgba(255, 255, 255, 0.04); /* Very subtle white for glass */
+            --glass-border: rgba(255, 255, 255, 0.08); /* Fainter border */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --text-muted: rgba(255, 255, 255, 0.65);
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.2); /* Lighter shadow for cards */
+            --shadow-heavy: 0 20px 60px rgba(31, 38, 135, 0.4); /* Heavier shadow on hover/forms */
+            --backdrop-blur: blur(25px); /* Increased blur */
+            --bg-color: #080808; /* Even darker background */
+        }
+
+        /* Global Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.7; /* Slightly more relaxed line height */
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Background Gradients/Blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(120, 119, 198, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 119, 198, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 40% 60%, rgba(120, 219, 255, 0.15) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: backgroundShift 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes backgroundShift {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(5%, 5%); }
+            50% { transform: translate(0, 10%); }
+            75% { transform: translate(-5%, 5%); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* Header Section */
+        .header {
+            padding: 4rem 0 2rem; /* More top padding */
+            position: relative;
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-title {
+            font-size: clamp(3.5rem, 9vw, 7rem); /* Larger on desktop */
+            font-weight: 800; /* Extra bold */
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem; /* More space */
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.4rem, 3.5vw, 2.2rem); /* Larger on desktop */
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem; /* More space */
+            animation: fadeInUp 1s ease-out 0.2s both;
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 1.2rem; /* Slightly larger */
+            color: var(--text-muted);
+            max-width: 700px; /* Wider description */
+            margin: 0 auto 3.5rem; /* More space below */
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem; /* Space between buttons */
+            margin-bottom: 4rem; /* Space before next section */
+            animation: fadeInUp 1s ease-out 0.6s both;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem; /* More padding */
+            margin-bottom: 3rem;
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            box-shadow: var(--shadow-light);
+            transition: all 0.4s ease; /* Slower transition */
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0); /* Force hardware acceleration */
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px; /* Thicker top line */
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .glass-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: var(--shadow-heavy);
+            border-color: rgba(255, 255, 255, 0.2); /* Lighter border on hover */
+        }
+
+        /* Project Section */
+        .project-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .project-title {
+            font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .coming-soon {
+            display: inline-block;
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 0.9rem 2.5rem; /* Larger padding */
+            border-radius: 50px;
+            font-weight: 700; /* Bolder */
+            font-size: 1.3rem; /* Larger text */
+            margin-bottom: 2.5rem;
+            animation: pulse 2s infinite ease-in-out; /* Smoother pulse */
+            box-shadow: 0 6px 25px rgba(245, 87, 108, 0.5); /* Stronger shadow */
+        }
+
+        /* Tech Stack & Features */
+        .grid-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem; /* More space between items */
+            margin-top: 3.5rem;
+        }
+
+        .tech-card, .feature-card {
+            background: rgba(255, 255, 255, 0.03); /* Slightly darker inner card */
+            border: 1px solid rgba(255, 255, 255, 0.06); /* Subtle border */
+            border-radius: 18px;
+            padding: 2.5rem;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .tech-card::before, .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease-out;
+        }
+
+        .tech-card:hover::before, .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tech-card:hover, .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .tech-icon, .feature-icon {
+            width: 70px; /* Larger icons */
+            height: 70px;
+            background: var(--accent-gradient);
+            border-radius: 15px; /* More rounded */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px; /* Larger icon font */
+            margin-bottom: 1.5rem;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .feature-icon {
+            font-size: 3.5rem; /* Larger emoji */
+        }
+
+        .tech-card:hover .tech-icon, .feature-card:hover .feature-icon {
+            transform: scale(1.05);
+        }
+
+        .tech-title, .feature-title {
+            font-size: 1.4rem; /* Larger title */
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .tech-description, .feature-description {
+            color: var(--text-muted);
+            font-size: 1rem; /* Slightly larger text */
+            line-height: 1.7;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            margin: 4rem 0; /* More vertical space */
+            padding: 4rem; /* More padding */
+            background: var(--glass-bg);
+            border-radius: 25px; /* More rounded */
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            box-shadow: var(--shadow-light);
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem; /* More space between steps */
+            animation: fadeInLeft 0.8s ease-out; /* Slower animation */
+            position: relative; /* For the connecting line */
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: calc(100% + 3rem); /* Height of step + margin-bottom */
+            background: var(--glass-border);
+            left: 50%;
+            transform: translateX(-50%);
+            top: 60px; /* Adjust to start below the number circle */
+            z-index: 0;
+        }
+
+        .flow-step:nth-child(even) {
+            flex-direction: row-reverse;
+            animation: fadeInRight 0.8s ease-out;
+        }
+        
+        .flow-step:nth-child(even):not(:last-child)::after {
+            left: auto;
+            right: 50%;
+            transform: translateX(50%);
+        }
+
+        .step-number {
+            width: 70px; /* Larger number circle */
+            height: 70px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800; /* Bolder number */
+            font-size: 1.5rem; /* Larger number */
+            margin: 0 2.5rem; /* More margin */
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+            flex-shrink: 0; /* Prevent shrinking */
+            z-index: 1; /* Ensure number is above line */
+        }
+
+        .step-content {
+            flex: 1;
+            text-align: left; /* Ensure text aligns left */
+            position: relative; /* For z-index */
+            z-index: 1;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 1.1rem 3rem; /* Larger padding for buttons */
+            border-radius: 50px;
+            font-weight: 700; /* Bolder text */
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem; /* Larger font size */
+            margin: 0.75rem; /* More margin */
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5); /* Stronger shadow */
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: 0 6px 25px rgba(245, 87, 108, 0.5);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            z-index: -1; /* Behind button text */
+        }
+
+        .btn:hover::before {
+            width: 350px; /* Larger ripple effect */
+            height: 350px;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px); /* More pronounced lift */
+        }
+
+        /* Forms */
+        .form-container {
+            display: none;
+            margin-top: 4rem;
+            animation: slideInUp 0.6s ease-out forwards; /* Slower slide in */
+        }
+
+        .premium-form {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)); /* More distinct gradient */
+            border: 2px solid rgba(255, 255, 255, 0.15); /* Stronger border */
+            border-radius: 28px; /* More rounded */
+            padding: 4rem; /* More padding */
+            box-shadow: var(--shadow-heavy);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px; /* Thicker top line */
+            background: var(--primary-gradient);
+            border-radius: 28px 28px 0 0;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .form-icon {
+            font-size: 3.5rem; /* Larger icon */
+            margin-bottom: 1.5rem;
+            display: block;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+         
+            background-clip: text;
+        }
+
+        .form-title {
+            font-size: 2.4rem; /* Larger title */
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem; /* Larger subtitle */
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .early-access-perks,
+        .job-perks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid for perks */
+            gap: 2rem;
+            margin-bottom: 3.5rem;
+            padding: 2.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .perk {
+            display: flex;
+            align-items: flex-start; /* Align icon and text at top */
+            gap: 1.2rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.01); /* Even lighter background for perk items */
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .perk:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateX(8px); /* Subtle slide on hover */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .perk-icon {
+            font-size: 2.2rem; /* Larger perk icon */
+            width: 65px;
+            height: 65px;
+            background: var(--accent-gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .perk-content h4 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            font-size: 1.2rem;
+        }
+
+        .perk-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 2.5rem; /* More space between form groups */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 1rem; /* More space below label */
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1.3rem; /* Larger input padding */
+            border: 2px solid var(--glass-border);
+            border-radius: 15px; /* More rounded inputs */
+            background: rgba(255, 255, 255, 0.02); /* Lighter input background */
+            color: var(--text-primary);
+            backdrop-filter: blur(10px); /* Subtle blur on inputs */
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.8); /* Brighter focus border */
+            box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.2); /* Stronger focus shadow */
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px; /* Taller text areas */
+        }
+
+        .premium-btn {
+            width: 100%;
+            padding: 1.4rem 2rem; /* Larger button */
+            font-size: 1.2rem; /* Larger font */
+            font-weight: 800; /* Bolder */
+            text-transform: uppercase;
+            letter-spacing: 0.8px; /* More letter spacing */
+            border-radius: 15px; /* More rounded */
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .premium-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.25); /* Stronger ripple */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .premium-btn:hover::after {
+            width: 450px; /* Larger ripple */
+            height: 450px;
+        }
+
+        .premium-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.8); /* Even stronger shadow */
+        }
+
+        .btn-secondary.premium-btn:hover {
+            box-shadow: 0 10px 40px rgba(245, 87, 108, 0.8);
+        }
+
+        /* Developer Contact Section */
+        .developer-contact {
+            text-align: center;
+            padding: 4rem 2rem; /* More padding */
+            margin-top: 4rem; /* More space from previous section */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)); /* Subtle gradient */
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .developer-contact h2 {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .developer-contact p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem; /* More space between icons */
+            flex-wrap: wrap;
+        }
+
+        .social-icon-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 1rem; /* Padding for hover area */
+            border-radius: 15px;
+        }
+
+        .social-icon-link:hover {
+            color: var(--accent-color);
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05); /* Subtle background on hover */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .social-icon-link svg {
+            width: 50px; /* Larger SVG icons */
+            height: 50px;
+            margin-bottom: 0.8rem;
+            fill: url(#gradient-icon); /* Use gradient fill for icons */
+            transition: all 0.3s ease;
+        }
+
+        .social-icon-link:hover svg {
+            transform: scale(1.1); /* Pop effect on hover */
+            filter: drop-shadow(0 0 10px rgba(79, 172, 254, 0.6)); /* Glow effect */
+        }
+
+        /* SVG Gradient Definition */
+        svg linearGradient#gradient-icon stop:first-child { stop-color: #4facfe; }
+        svg linearGradient#gradient-icon stop:last-child { stop-color: #00f2fe; }
+
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 3rem;
+        }
+
+        /* Message Box */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            padding: 1.2rem 2.5rem; /* Larger padding */
+            border-radius: 15px; /* More rounded */
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease; /* Slower transition */
+            box-shadow: var(--shadow-light);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .message-box.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+            color: #22c55e; /* Tailwind green-500 */
+        }
+
+        .message-box.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            color: #ef4444; /* Tailwind red-500 */
+        }
+
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .loading-indicator.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-title { font-size: clamp(3rem, 8vw, 6rem); }
+            .hero-subtitle { font-size: clamp(1.3rem, 3vw, 2rem); }
+            .project-title { font-size: clamp(2.5rem, 5vw, 4rem); }
+            .form-title { font-size: 2rem; }
+            .form-subtitle { font-size: 1.1rem; }
+            .premium-form { padding: 3rem; }
+            .early-access-perks, .job-perks { grid-template-columns: 1fr; }
+            .perk { flex-direction: row; text-align: left; } /* Keep row for perks on medium screens */
+            .step-number { margin: 0 1.5rem; }
+            .developer-contact h2 { font-size: clamp(2rem, 3.5vw, 3rem); }
+        }
+
+        @media (max-width: 768px) {
+            .header { padding: 3rem 0 1rem; }
+            .hero-title { font-size: clamp(2.5rem, 7vw, 5rem); }
+            .hero-subtitle { font-size: clamp(1.1rem, 2.8vw, 1.6rem); }
+            .glass-card { padding: 2rem; }
+            .project-title { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+            .coming-soon { padding: 0.7rem 1.8rem; font-size: 1.1rem; }
+            .grid-section { grid-template-columns: 1fr; gap: 2rem; }
+            .tech-card, .feature-card { padding: 2rem; }
+            .tech-icon, .feature-icon { width: 60px; height: 60px; font-size: 28px; }
+            .feature-icon { font-size: 3rem; }
+            .architecture-diagram { padding: 3rem; }
+            .flow-step { flex-direction: column !important; text-align: center; margin-bottom: 2rem; }
+            .flow-step:not(:last-child)::after {
+                left: 50%;
+                transform: translateX(-50%);
+                height: calc(100% + 2rem); /* Adjusted for mobile margin */
+                top: 60px;
+            }
+            .flow-step:nth-child(even):not(:last-child)::after {
+                left: 50%; /* Reset for column layout */
+                right: auto;
+                transform: translateX(-50%);
+            }
+            .step-number { margin: 1.5rem 0 1rem; width: 60px; height: 60px; font-size: 1.3rem; }
+            .step-content { text-align: center; }
+            .btn { padding: 0.9rem 2.2rem; font-size: 1rem; margin: 0.5rem; }
+            .premium-form { padding: 2.5rem; border-radius: 20px; }
+            .form-title { font-size: 2rem; }
+            .form-subtitle { font-size: 1rem; }
+            .early-access-perks, .job-perks { padding: 2rem; gap: 1.5rem; }
+            .perk { flex-direction: column; text-align: center; }
+            .perk-icon { margin-bottom: 0.8rem; }
+            .form-group label { font-size: 1rem; }
+            .form-group input, .form-group textarea { padding: 1rem; font-size: 0.95rem; border-radius: 12px; }
+            .premium-btn { padding: 1.1rem 1.5rem; font-size: 1.1rem; border-radius: 12px; }
+            .developer-contact { padding: 3rem 1.5rem; }
+            .developer-contact h2 { font-size: 2rem; }
+            .developer-contact p { font-size: 1rem; }
+            .social-icons { gap: 1.5rem; }
+            .social-icon-link { font-size: 1rem; padding: 0.8rem; }
+            .social-icon-link svg { width: 40px; height: 40px; }
+            .footer { padding: 1.5rem 0; font-size: 0.8rem; }
+            .message-box { padding: 0.8rem 1rem; font-size: 0.9rem; border-radius: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .header { padding: 2rem 0 0.5rem; }
+            .hero-title { font-size: clamp(2rem, 6vw, 4rem); }
+            .hero-subtitle { font-size: clamp(0.9rem, 2.5vw, 1.4rem); }
+            .hero-description { font-size: 0.95rem; margin-bottom: 2.5rem; }
+            .header-buttons { flex-direction: column; gap: 1rem; }
+            .btn { width: 90%; margin: 0.5rem auto; }
+            .glass-card { padding: 1.5rem; border-radius: 15px; }
+            .project-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            .coming-soon { padding: 0.6rem 1.5rem; font-size: 1rem; }
+            .tech-card, .feature-card { padding: 1.5rem; border-radius: 15px; }
+            .tech-icon, .feature-icon { width: 50px; height: 50px; font-size: 24px; margin-bottom: 1rem; }
+            .feature-icon { font-size: 2.5rem; }
+            .tech-title, .feature-title { font-size: 1.2rem; }
+            .tech-description, .feature-description { font-size: 0.9rem; }
+            .architecture-diagram { padding: 2rem; border-radius: 20px; }
+            .step-number { width: 50px; height: 50px; font-size: 1.2rem; margin: 1rem 0 0.8rem; }
+            .step-title { font-size: 1.3rem; }
+            .step-description { font-size: 0.95rem; }
+            .premium-form { padding: 2rem; border-radius: 18px; }
+            .form-title { font-size: 1.8rem; }
+            .form-subtitle { font-size: 0.95rem; }
+            .early-access-perks, .job-perks { padding: 1.5rem; gap: 1rem; }
+            .perk { padding: 1rem; border-radius: 10px; }
+            .perk-icon { width: 55px; height: 55px; font-size: 2rem; }
+            .perk-content h4 { font-size: 1.1rem; }
+            .perk-content p { font-size: 0.85rem; }
+            .form-group { margin-bottom: 1.5rem; }
+            .form-group label { font-size: 0.95rem; margin-bottom: 0.8rem; }
+            .form-group input, .form-group textarea { padding: 0.8rem; font-size: 0.9rem; border-radius: 10px; }
+            .premium-btn { padding: 1rem 1.2rem; font-size: 1rem; border-radius: 10px; }
+            .developer-contact { padding: 2rem 1rem; }
+            .developer-contact h2 { font-size: 1.8rem; }
+            .developer-contact p { font-size: 0.9rem; }
+            .social-icons { gap: 1rem; }
+            .social-icon-link { font-size: 0.9rem; padding: 0.5rem; }
+            .social-icon-link svg { width: 35px; height: 35px; }
+            .footer { padding: 1.5rem 0; font-size: 0.8rem; }
+            .message-box { padding: 0.8rem 1rem; font-size: 0.9rem; border-radius: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="message-box" id="messageBox"></div>
+    <div class="loading-indicator" id="loadingIndicator">
+        <div class="loading-spinner"></div>
+        <span>Submitting... Please wait.</span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="hero-title">CodeCraft AI</h1>
+            <p class="hero-subtitle">The Future of Frontend Development, Powered by AI</p>
+            <p class="hero-description">
+                Transform your ideas into beautiful, production-ready components with unprecedented speed and precision. 
+                Focus on innovation, not boilerplate code.
+            </p>
+            <div class="header-buttons">
+                <button class="btn btn-primary" id="joinWishlistBtn">
+                    🚀 Join Early Access Waitlist
+                </button>
+                <button class="btn btn-secondary" id="collaborateBtn">
+                    🤝 Work with Us
+                </button>
+            </div>
+        </header>
+
+        <!-- Project Overview -->
+        <section class="glass-card">
+            <div class="project-header">
+                <h2 class="project-title">AI-Powered Component Generator</h2>
+                <div class="coming-soon">Coming Soon!</div>
+            </div>
+            
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                Imagine describing your UI vision in plain English and watching it come to life instantly. 
+                Our AI understands your design language and generates pixel-perfect components for any framework.
+            </p>
+
+            <div class="grid-section features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">Natural Language Design</h3>
+                    <p class="feature-description">
+                        "Create a glassmorphic login button with neon glow" - and watch it materialize instantly.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Multi-Framework Support</h3>
+                    <p class="feature-description">
+                        Generate components for React, React Native, Flutter, or pure CSS - all from one prompt.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Smart Customization</h3>
+                    <p class="feature-description">
+                        Refine existing components with simple prompts: "Make it blue and add hover effects."
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3 class="feature-title">Component Library</h3>
+                    <p class="feature-description">
+                        Access a growing collection of pre-built components, all customizable and ready to use.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="glass-card">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                The CodeCraft AI Workflow
+            </h2>
+            
+            <div class="architecture-diagram">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Your Idea, Our AI's Input</h3>
+                        <p class="step-description">
+                            Simply describe the UI component you envision using natural language. For example: "A sleek, dark-themed login form with rounded inputs and a gradient button."
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Instant Code Generation</h3>
+                        <p class="step-description">
+                            Our advanced AI models immediately process your request, generating clean, production-ready code in your chosen framework (React, React Native, Flutter, or pure CSS).
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Real-time Visual Feedback</h3>
+                        <p class="step-description">
+                            See your generated component come to life instantly in an interactive live preview. Adjust and refine its appearance with additional prompts like "Make the button red" or "Add a subtle shadow."
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Seamless Integration & Storage</h3>
+                        <p class="step-description">
+                            Copy the code directly to your project or save it to your personal gallery. Your prompts and generated components are stored securely, making them easily retrievable and reusable.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section class="glass-card">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem; background: var(--secondary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Technology Stack
+            </h2>
+            
+            <div class="grid-section tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">⚛️</div>
+                    <h3 class="tech-title">Next.js & React</h3>
+                    <p class="tech-description">
+                        Full-stack React framework with API routes, optimized for performance and SEO.
+                    </p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">🧠</div>
+                    <h3 class="tech-title">AI Integration</h3>
+                    <p class="tech-description">
+                        OpenAI GPT-4 and Anthropic Claude for intelligent code generation and customization.
+                    </p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">🎨</div>
+                    <h3 class="tech-title">Tailwind CSS</h3>
+                    <p class="tech-description">
+                        Utility-first CSS framework for rapid prototyping and consistent design systems.
+                    </p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">🔍</div>
+                    <h3 class="tech-title">Vector Database</h3>
+                    <p class="tech-description">
+                        Supabase Vector for intelligent component search and similarity matching.
+                    </p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <h3 class="tech-title">Embeddings</h3>
+                    <p class="tech-description">
+                        OpenAI embeddings for semantic search and personalized component recommendations.
+                    </p>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">🔒</div>
+                    <h3 class="tech-title">Authentication</h3>
+                    <p class="tech-description">
+                        Secure user management with Supabase Auth and social login integration.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forms Section (hidden by default) -->
+        <div id="wishlistFormContainer" class="form-container premium-form">
+            <div class="form-header">
+                <span class="form-icon">✨</span>
+                <h3 class="form-title">Join Our Exclusive Waitlist!</h3>
+                <p class="form-subtitle">
+                    Be among the first to experience the future of frontend development.
+                </p>
+            </div>
+            
+            <div class="early-access-perks">
+                <div class="perk">
+                    <div class="perk-icon">🔑</div>
+                    <div class="perk-content">
+                        <h4>Early Access</h4>
+                        <p>Be the first to try out our powerful AI component generator.</p>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">🎁</div>
+                    <div class="perk-content">
+                        <h4>Unlimited Free Access (1 Week)</h4>
+                        <p>Enjoy a complimentary week of full, unlimited access to all premium features.</p>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">🗣️</div>
+                    <div class="perk-content">
+                        <h4>Shape the Future</h4>
+                        <p>Provide direct feedback and influence future features and roadmap.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="wishlistForm">
+                <div class="form-group">
+                    <label for="wishlistName">Your Full Name:</label>
+                    <input type="text" id="wishlistName" name="Name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="wishlistEmail">Your Professional Email:</label>
+                    <input type="email" id="wishlistEmail" name="Email" required placeholder="you@example.com">
+                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">
+                        We verify emails to ensure genuine interest and prevent spam.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="wishlistReason">Why are you excited to join the CodeCraft AI waitlist?</label>
+                    <textarea id="wishlistReason" name="Reason" rows="4" required placeholder="e.g., 'I want to build faster, I'm tired of writing repetitive CSS boilerplate.'"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="wishlistSocial">Optional: Your Social/Portfolio Link (e.g., GitHub, LinkedIn, Personal Website):</label>
+                    <input type="text" id="wishlistSocial" name="SocialLink" placeholder="https://github.com/yourprofile">
+                </div>
+                <button type="submit" class="btn btn-primary premium-btn">
+                    Join Waitlist
+                </button>
+            </form>
+        </div>
+
+        <div id="collaborationFormContainer" class="form-container premium-form">
+            <div class="form-header">
+                <span class="form-icon">🤝</span>
+                <h3 class="form-title">Work with Us!</h3>
+                <p class="form-subtitle">
+                    Passionate about AI, frontend, or design? Join our core team and help build the future.
+                </p>
+            </div>
+
+            <div class="job-perks">
+                <div class="perk">
+                    <div class="perk-icon">💡</div>
+                    <div class="perk-content">
+                        <h4>Impactful Work</h4>
+                        <p>Contribute to a tool that will revolutionize frontend development.</p>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">📈</div>
+                    <div class="perk-content">
+                        <h4>Growth Opportunity</h4>
+                        <p>Work with cutting-edge AI and web technologies in a fast-paced environment.</p>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">🌐</div>
+                    <div class="perk-content">
+                        <h4>Remote & Flexible</h4>
+                        <p>Collaborate from anywhere with a supportive and dynamic team.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="collaborationForm">
+                <div class="form-group">
+                    <label for="collabName">Your Full Name:</label>
+                    <input type="text" id="collabName" name="Name" required placeholder="Jane Smith">
+                </div>
+                <div class="form-group">
+                    <label for="collabEmail">Your Professional Email:</label>
+                    <input type="email" id="collabEmail" name="Email" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="collabLanguages">Which programming languages/frameworks are you proficient in?</label>
+                    <input type="text" id="collabLanguages" name="Languages" required placeholder="e.g., React, Next.js, Python, Flutter, Node.js">
+                </div>
+                <div class="form-group">
+                    <label for="collabExperience">Briefly describe your relevant experience (e.g., years, projects, roles):</label>
+                    <textarea id="collabExperience" name="Experience" rows="4" required placeholder="e.g., '5 years in web development, specializing in React and Node.js. Built scalable APIs and responsive UIs.'"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="collabSocial">Your Valid Social/Portfolio Link (e.g., GitHub, LinkedIn, Portfolio Website):</label>
+                    <input type="text" id="collabSocial" name="SocialLink" required placeholder="https://linkedin.com/in/yourprofile">
+                </div>
+                <button type="submit" class="btn btn-secondary premium-btn">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+
+        <!-- Developer Contact Section -->
+        <section class="developer-contact glass-card">
+            <h2>Connect with the Developer</h2>
+            <p>
+                I'm always open to new ideas, collaborations, and discussions. Feel free to reach out through any of the platforms below!
+            </p>
+            <div class="social-icons">
+                <a href="https://github.com/aadityansha06" target="_blank" class="social-icon-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <defs>
+                            <linearGradient id="gradient-icon" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.082-.743.082-.729.082-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.835 2.809 1.305 3.493.998.108-.773.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+                <a href="https://aadityansha06.github.io" target="_blank" class="social-icon-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <defs>
+                            <linearGradient id="gradient-icon" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2h-4v2h4V4zm6 15H4V8h16v11zM9 10h6v2H9v-2zm0 3h6v2H9v-2z"/>
+                    </svg>
+                    Portfolio
+                </a>
+                <a href="https://x.com/aadityansha_06" target="_blank" class="social-icon-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <defs>
+                            <linearGradient id="gradient-icon" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.21-6.897L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.714 6.23L18.244 2.25zm-2.91 17.02h1.46L9.35 4.914H7.78L15.334 19.27z"/>
+                    </svg>
+                    X (Twitter)
+                </a>
+                <a href="https://t.me/aadityansha" target="_blank" class="social-icon-link">
+                   <svg width="24px" height="24px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg"><path d="M23.91 3.79L20.3 20.84c-.25 1.21-.98 1.5-2 .94l-5.5-4.07-2.66 2.57c-.3.3-.55.56-1.1.56-.72 0-.6-.27-.84-.95L6.3 13.7l-5.45-1.7c-1.18-.35-1.19-1.16.26-1.75l21.26-8.2c.97-.43 1.9.24 1.53 1.73z"/></svg> 
+                    Telegram
+                </a>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2025 CodeCraft AI. All rights reserved. Built with passion and AI.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Updated Apps Script URL
+            const appsScriptURL = 'https://script.google.com/macros/s/AKfycbxTA9LlYkX3w4lBq-q2v6JqOnBqFZC-a0hunOKgrITctEDB4dF68Jbar1RmIeoRyccW/exec';
+
+            const joinWishlistBtn = document.getElementById('joinWishlistBtn');
+            const collaborateBtn = document.getElementById('collaborateBtn');
+            const wishlistFormContainer = document.getElementById('wishlistFormContainer');
+            const collaborationFormContainer = document.getElementById('collaborationFormContainer');
+            const wishlistForm = document.getElementById('wishlistForm');
+            const collaborationForm = document.getElementById('collaborationForm');
+            const messageBox = document.getElementById('messageBox');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            // Function to show messages
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.className = `message-box show ${type}`; // Add type class (success/error)
+                setTimeout(() => {
+                    messageBox.className = 'message-box'; // Hide after 3 seconds
+                }, 3000);
+            }
+
+            // Function to show/hide loading indicator
+            function showLoading(show) {
+                if (show) {
+                    loadingIndicator.classList.add('show');
+                } else {
+                    loadingIndicator.classList.remove('show');
+                }
+            }
+
+            // Function to validate email format (basic)
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // Event listeners for buttons to show/hide forms
+            joinWishlistBtn.addEventListener('click', () => {
+                wishlistFormContainer.style.display = 'block';
+                collaborationFormContainer.style.display = 'none';
+                wishlistFormContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            collaborateBtn.addEventListener('click', () => {
+                collaborationFormContainer.style.display = 'block';
+                wishlistFormContainer.style.display = 'none';
+                collaborationFormContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            // Handle Wishlist Form Submission
+            wishlistForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(wishlistForm);
+                const email = formData.get('Email');
+
+                if (!isValidEmail(email)) {
+                    showMessage('Please enter a valid email address.', 'error');
+                    return;
+                }
+
+                // Show loading indicator
+                showLoading(true);
+
+                // Append a 'formType' field to distinguish submissions in Apps Script
+                formData.append('formType', 'wishlist');
+
+                try {
+                    const response = await fetch(appsScriptURL, {
+                        method: 'POST',
+                        body: formData // FormData automatically sets Content-Type: multipart/form-data
+                    });
+
+                    // Hide loading indicator
+                    showLoading(false);
+
+                    // Check if the response is OK (status 200-299)
+                    if (response.ok) {
+                        const result = await response.text(); // Apps Script often returns plain text
+                        if (result.includes('Success')) { // Check for a specific success message from Apps Script
+                            showMessage('Thank you for joining the wishlist! We will notify you when we launch.', 'success');
+                              setTimeout(() => {
+                              wishlistForm.reset();
+                              wishlistFormContainer.style.display = 'none';
+            }, 1500); 
+                        } else {
+                            // If response is OK but doesn't contain 'Success', it's an Apps Script logic error
+                            showMessage('Submission failed. Please try again. (Apps Script response: ' + result + ')', 'error');
+                            console.error('Apps Script did not return success:', result);
+                        }
+                    } else {
+                        // Handle HTTP errors (e.g., 404, 500)
+                        showMessage(`Network error or server issue. Status: ${response.status} ${response.statusText}. Please try again later.`, 'error');
+                        console.error('Network response not OK:', response.status, response.statusText);
+                    }
+                } catch (error) {
+                    // Hide loading indicator
+                    showLoading(false);
+                    // Handle network-related errors (e.g., CORS, no internet)
+                    console.error('Error submitting wishlist:', error);
+                    showMessage('An error occurred. Please check your internet connection or try again later.', 'error');
+                }
+            });
+
+            // Handle Collaboration Form Submission
+            collaborationForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(collaborationForm);
+                const email = formData.get('Email');
+
+                if (!isValidEmail(email)) {
+                    showMessage('Please enter a valid email address.', 'error');
+                    return;
+                }
+
+                // Show loading indicator
+                showLoading(true);
+
+                // Append a 'formType' field to distinguish submissions in Apps Script
+                formData.append('formType', 'collaboration');
+
+                try {
+                    const response = await fetch(appsScriptURL, {
+                        method: 'POST',
+                        body: formData // FormData automatically sets Content-Type: multipart/form-data
+                    });
+
+                    // Hide loading indicator
+                    showLoading(false);
+
+                    // Check if the response is OK (status 200-299)
+                    if (response.ok) {
+                        const result = await response.text();
+                        if (result.includes('Success')) { // Check for a specific success message from Apps Script
+                            showMessage('Thank you for your interest in working with us ! We will reach out in a day or two.', 'success');
+                  setTimeout(() => {
+                         collaborationForm.reset();
+                        collaborationFormContainer.style.display = 'none';
+            }, 1500);
+                        } else {
+                            // If response is OK but doesn't contain 'Success', it's an Apps Script logic error
+                            showMessage('Submission failed. Please try again. (Apps Script response: ' + result + ')', 'error');
+                            console.error('Apps Script did not return success:', result);
+                        }
+                    } else {
+                        // Handle HTTP errors (e.g., 404, 500)
+                        showMessage(`Network error or server issue. Status: ${response.status} ${response.statusText}. Please try again later.`, 'error');
+                        console.error('Network response not OK:', response.status, response.statusText);
+                    }
+                } catch (error) {
+                    // Hide loading indicator
+                    showLoading(false);
+                    // Handle network-related errors (e.g., CORS, no internet)
+                    console.error('Error submitting collaboration:', error);
+                    showMessage('An error occurred. Please check your internet connection or try again later.', 'error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
